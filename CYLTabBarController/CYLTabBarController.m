@@ -321,6 +321,19 @@ static void * const CYLTabImageViewDefaultOffsetContext = (void*)&CYLTabImageVie
     CYLTabBar *tabBar = [[CYLTabBar alloc] init];
     [self setValue:tabBar forKey:@"tabBar"];
     [tabBar cyl_setTabBarController:self];
+    if (@available(iOS 18.0, *)) {
+        if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPad) {
+            self.mode = UITabBarControllerModeTabBar;
+            self.traitOverrides.horizontalSizeClass = UIUserInterfaceSizeClassCompact;
+            [self.view addSubview:tabBar];
+            for (UIView *subview in self.view.subviews) {
+                NSString *tabContainerClassName = [NSString stringWithFormat:@"%@%@%@", @"_UITab", @"Container", @"View"];
+                if ([NSStringFromClass(subview.class) isEqualToString:tabContainerClassName]) {
+                    [subview setHidden:YES];
+                }
+            }
+        }
+    }
 }
 
 - (BOOL)hasPlusChildViewController {
